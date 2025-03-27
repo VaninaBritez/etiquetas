@@ -1,111 +1,225 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Definir la codificación de caracteres -->
     <meta charset="UTF-8">
+    <!-- Hacer que la página se ajuste a diferentes tamaños de pantalla (diseño adaptable) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Título de la página que se muestra en la pestaña del navegador -->
     <title>Generador de Etiquetas</title>
+
+    <!-- Cargar la librería JsBarcode para generar los códigos de barras -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+
+    <!-- Estilos CSS para mejorar la apariencia -->
     <style>
+        /* Estilos generales para el cuerpo de la página */
         body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+             background-color: #D3D9E9;  /* Color de fondo suave*/
+            padding: 20px;  /* Espaciado alrededor del contenido */
+            margin: 0;
+            color: #333;  /* Color de texto */
         }
+        /* Estilo para el título principal */
+        h1 {
+            text-align: center;
+             color: #31293F;  /* Color verde para el título */
+        }
+        /* Estilos para el formulario de entrada de datos */
         form {
+             background-color: #A6A9C8;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* Sombra suave */
             margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 400px;  /* Ancho máximo del formulario */
+            margin: 0 auto;
         }
+        /* Estilos para las etiquetas de los campos de entrada */
+        label {
+            margin: 10px 0;
+            font-weight: bold;
+			flex-direction: column;
+			width: 90%;
+			display: flex;
+			 color: #554D74;
+			
+        }
+        /* Estilos para los campos de entrada de texto */
+        input[type="text"],
+        input[type="number"] {
+            padding: 8px;
+            margin-top: 5px;
+            width: 100%;
+            max-width: 300px;
+            border: 1px solid #7A8D9B;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        /* Estilos para el botón de generación de etiquetas */
+        button {
+             background-color: #D3D9E9;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        /* Estilo para el botón cuando se pasa el cursor */
+        button:hover {
+            background-color: #d1ceed;
+        }
+        /* Estilos para las etiquetas generadas */
         .etiqueta {
-            border: 1px solid black;
-            width: 300px;
-            height: 200px;
-            padding: 10px;
-            margin: 10px auto;
+            background-color: #fff;
+            border: 1px solid #796EA8;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px;
             text-align: center;
             box-sizing: border-box;
+            width: 280px;
+            height: 220px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
         }
+        /* Efecto de hover para las etiquetas */
+        .etiqueta:hover {
+            transform: scale(1.05);
+        }
+        /* Contenedor para las etiquetas generadas */
         .etiquetas-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
         }
+        /* Estilos para el título y párrafos dentro de las etiquetas */
         .etiqueta h2, .etiqueta p {
             margin: 0;
+            color: #333;
+            font-size: 12px;
+			
         }
+        /* Estilo para el título dentro de la etiqueta */
+        .etiqueta h2 {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        /* Estilo para los códigos de barra (SVG) */
         svg {
             width: 100%;
-            height: 60px;
+            height: 80px;  /* Aumenta la altura para mejorar la visibilidad */
+            margin-bottom: 10px;
         }
-
-        /* Solo imprimir etiquetas */
+        /* Estilos para la impresión */
         @media print {
             body * {
                 visibility: hidden;
             }
+            /* Asegura que las etiquetas sean visibles solo al imprimir */
             #etiquetas, #etiquetas * {
                 visibility: visible;
             }
+            /* Asegura que las etiquetas ocupen toda la página */
             #etiquetas {
                 position: absolute;
                 top: 0;
                 left: 0;
                 width: 100%;
             }
+            /* Previene que las etiquetas se corten al imprimirse */
             .etiqueta {
-                page-break-inside: avoid; /* Evita que las etiquetas se corten */
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #000;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Título principal de la página -->
     <h1>Generador de Etiquetas</h1>
+
+    <!-- Formulario para ingresar los datos -->
     <form id="formulario">
-        <label>Emisor: <input type="text" id="emisor" required></label><br>
-        <label>Destinatario: <input type="text" id="tienda" required></label><br>
+	    <label>Emisor: <input type="text" id="emisor" required></label><br>
+        <label>Receptor: <input type="text" id="tienda" required></label><br>
         <label>Nro de OT: <input type="text" id="ot" required></label><br>
         <label>Nro de Remisión: <input type="text" id="remision" required></label><br>
         <label>Cantidad de Cajas: <input type="number" id="cajas" required></label><br>
+        <!-- Botón para generar las etiquetas -->
         <button type="button" onclick="generarEtiquetas()">Generar Etiquetas</button>
+        <!-- Botón para imprimir las etiquetas -->
         <button type="button" onclick="imprimirEtiquetas()">Imprimir Etiquetas</button>
     </form>
 
+    <!-- Contenedor donde se agregarán las etiquetas generadas -->
     <div id="etiquetas" class="etiquetas-container"></div>
 
+    <!-- Código JavaScript -->
     <script>
         function generarEtiquetas() {
-            const emisor = document.getElementById('emisor').value;
+            // Obtener los valores del formulario
+			const emisor = document.getElementById('emisor').value;
             const tienda = document.getElementById('tienda').value;
             const ot = document.getElementById('ot').value;
             const remision = document.getElementById('remision').value;
             const cajas = parseInt(document.getElementById('cajas').value);
-            const fecha = new Date().toLocaleDateString();
+            const fecha = new Date().toLocaleDateString();  // Fecha actual
 
+            // Obtener el contenedor donde se agregarán las etiquetas generadas
             const contenedor = document.getElementById('etiquetas');
             contenedor.innerHTML = '';  // Limpiar etiquetas anteriores
 
+            // Generar las etiquetas para la cantidad de cajas especificada
             for (let i = 1; i <= cajas; i++) {
-                // Crear la estructura de la etiqueta
+                // Crear la estructura HTML de la etiqueta
                 const etiqueta = document.createElement('div');
                 etiqueta.className = 'etiqueta';
                 etiqueta.innerHTML = `
-                    <h2>${tienda}</h2>
-                    <p>Fecha: ${fecha}</p>
-                    <p>Caja: ${i}/${cajas}</p>
-                    <p>Nro OT: </p><svg id="barcode-ot-${i}"></svg>
-                    <p>Nro Remision: </p><svg id="barcode-remision-${i}"></svg>
+				    <p><b>Emisor:</b> ${emisor}</p>
+                    <p><b>Receptor:</b> ${tienda}</p>
+                    <p><b>Fecha:</b> ${fecha}</p>
+                    <p><b>Caja:</b> ${i}/${cajas}</p>
+                    <p><b>Nro OT:</b> ${ot}</p><svg id="barcode-ot-${i}"></svg>
+                    <p><b>Nro Remision:</b> ${remision}</p><svg id="barcode-remision-${i}"></svg>
                 `;
-
+                // Añadir la etiqueta al contenedor
                 contenedor.appendChild(etiqueta);
 
-                // Generar los códigos de barra
-                JsBarcode(`#barcode-ot-${i}`, ot, { format: "CODE128", displayValue: false });
-                JsBarcode(`#barcode-remision-${i}`, remision, { format: "CODE128", displayValue: false });
+                // Generar el código de barras para la OT
+JsBarcode(`#barcode-ot-${i}`, ot, { 
+    format: "CODE128", 
+    displayValue: false,  // No mostrar el valor del código de barras
+    width: 7,             // Grosor de las barras, más grueso para mejorar la legibilidad
+    height: 110,          // Aumentar la altura para mejorar la visibilidad
+    margin: 10            // Márgenes alrededor del código
+});
+
+// Generar el código de barras para la Remisión
+JsBarcode(`#barcode-remision-${i}`, remision, { 
+    format: "CODE128", 
+    displayValue: false,
+    width: 7,             // Ajustar el grosor para mejorar la lectura
+    height: 200,          // Aumentar la altura
+    margin: 10            // Márgenes alrededor del código
+});
             }
         }
 
+        // Función para imprimir las etiquetas
         function imprimirEtiquetas() {
-            window.print();
+            window.print();  // Abre el diálogo de impresión del navegador
         }
     </script>
 </body>
