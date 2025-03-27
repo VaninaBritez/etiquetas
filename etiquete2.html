@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Etiquetas</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        .etiqueta {
+            border: 1px solid black;
+            width: 300px;
+            height: 200px;
+            padding: 10px;
+            margin: 10px auto;
+            text-align: center;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .etiquetas-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .etiqueta h2, .etiqueta p {
+            margin: 0;
+        }
+        svg {
+            width: 100%;
+            height: 60px;
+        }
+
+        /* Solo imprimir etiquetas */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #etiquetas, #etiquetas * {
+                visibility: visible;
+            }
+            #etiquetas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+            }
+            .etiqueta {
+                page-break-inside: avoid; /* Evita que las etiquetas se corten */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Generador de Etiquetas</h1>
+    <form id="formulario">
+        <label>Tienda: <input type="text" id="tienda" required></label><br>
+        <label>Nro de OT: <input type="text" id="ot" required></label><br>
+        <label>Nro de Remisión: <input type="text" id="remision" required></label><br>
+        <label>Cantidad de Cajas: <input type="number" id="cajas" required></label><br>
+        <button type="button" onclick="generarEtiquetas()">Generar Etiquetas</button>
+        <button type="button" onclick="imprimirEtiquetas()">Imprimir Etiquetas</button>
+    </form>
+
+    <div id="etiquetas" class="etiquetas-container"></div>
+
+    <script>
+        function generarEtiquetas() {
+            const tienda = document.getElementById('tienda').value;
+            const ot = document.getElementById('ot').value;
+            const remision = document.getElementById('remision').value;
+            const cajas = parseInt(document.getElementById('cajas').value);
+            const fecha = new Date().toLocaleDateString();
+
+            const contenedor = document.getElementById('etiquetas');
+            contenedor.innerHTML = '';  // Limpiar etiquetas anteriores
+
+            for (let i = 1; i <= cajas; i++) {
+                // Crear la estructura de la etiqueta
+                const etiqueta = document.createElement('div');
+                etiqueta.className = 'etiqueta';
+                etiqueta.innerHTML = `
+                    <h2>${tienda}</h2>
+                    <p>Fecha: ${fecha}</p>
+                    <p>Caja: ${i}/${cajas}</p>
+                    <p>Nro OT: </p><svg id="barcode-ot-${i}"></svg>
+                    <p>Nro Remision: </p><svg id="barcode-remision-${i}"></svg>
+                `;
+
+                contenedor.appendChild(etiqueta);
+
+                // Generar los códigos de barra
+                JsBarcode(`#barcode-ot-${i}`, ot, { format: "CODE128", displayValue: false });
+                JsBarcode(`#barcode-remision-${i}`, remision, { format: "CODE128", displayValue: false });
+            }
+        }
+
+        function imprimirEtiquetas() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
+
+
