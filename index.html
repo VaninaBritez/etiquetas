@@ -61,7 +61,8 @@
 <body>
     <h1>Generador de Etiquetas</h1>
     <form id="formulario">
-        <label>Tienda: <input type="text" id="tienda" required></label><br>
+        <label>Emisor: <input type="text" id="emisor" required></label><br>
+        <label>Destinatario: <input type="text" id="tienda" required></label><br>
         <label>Nro de OT: <input type="text" id="ot" required></label><br>
         <label>Nro de Remisión: <input type="text" id="remision" required></label><br>
         <label>Cantidad de Cajas: <input type="number" id="cajas" required></label><br>
@@ -73,6 +74,7 @@
 
     <script>
         function generarEtiquetas() {
+            const emisor = document.getElementById('emisor').value;
             const tienda = document.getElementById('tienda').value;
             const ot = document.getElementById('ot').value;
             const remision = document.getElementById('remision').value;
