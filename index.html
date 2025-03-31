@@ -166,10 +166,7 @@
     <!-- Contenedor donde se agregarán las etiquetas generadas -->
     <div id="etiquetas" class="etiquetas-container"></div>
 	
-    <!-- Iframe oculto -->
-    <iframe id="iframeImpresion" style="display:none;"></iframe>
-
-    <!-- Código JavaScript -->
+       <!-- Código JavaScript -->
     <script>
         function generarEtiquetas() {
             // Obtener los valores del formulario
@@ -223,10 +220,13 @@ JsBarcode(`#barcode-remision-${i}`, remision, {
         // Función para imprimir las etiquetas
         function imprimirEtiquetas() {
     const contenido = document.getElementById('etiquetas').innerHTML;
-    const iframe = document.getElementById('iframeImpresion').contentWindow;
 
-    iframe.document.open();
-    iframe.document.write(`
+    // Abrir nueva ventana
+    const ventana = window.open('', '_blank');
+    
+    // Escribir el contenido en la nueva ventana
+    ventana.document.open();
+    ventana.document.write(`
         <html>
         <head>
             <title>Impresión de Etiquetas</title>
@@ -236,13 +236,12 @@ JsBarcode(`#barcode-remision-${i}`, remision, {
                 svg { width: 100%; height: 80px; }
             </style>
         </head>
-        <body onload="window.print();">
+        <body onload="setTimeout(() => { window.print(); window.close(); }, 500);">
             ${contenido}
         </body>
         </html>
     `);
-    iframe.document.close();
-    iframe.focus();
+    ventana.document.close();
 }
     </script>
 </body>
